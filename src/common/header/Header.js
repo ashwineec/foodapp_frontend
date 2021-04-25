@@ -121,11 +121,10 @@ class Header extends Component {
     this.setState({ passwordReg: e.target.value })
   }
 
-  componentDidMount() {
-  }
+ 
 
   //Login function
-  loginClickHandler = () => {
+  loginHandler = () => {
     //Clearing error texts during login
     this.setState({ loginInvalidContactNo: "" })
 
@@ -155,6 +154,9 @@ class Header extends Component {
           that.setState({ loginErrCode: loginResponse.code });
           that.setState({ loginErrorMsg: loginResponse.message });
         } else {
+         // let resp = JSON.parse(this.responseText);
+          console.log("respne " + this.responseText);
+
           sessionStorage.setItem('uuid', JSON.parse(this.responseText).id);
           sessionStorage.setItem('access-token', xhrLogin.getResponseHeader('access-token'));
           sessionStorage.setItem('firstName', JSON.parse(this.responseText).first_name);
@@ -167,7 +169,7 @@ class Header extends Component {
       }
     })
     xhrLogin.open("POST", this.props.baseUrl + "customer/login");
-    xhrLogin.setRequestHeader("authorization", "Basic " + window.btoa(this.state.username + ":" + this.state.password));
+    xhrLogin.setRequestHeader("authentication", "Basic " + window.btoa(this.state.username + ":" + this.state.password));
     xhrLogin.setRequestHeader("Content-Type", "application/json");
     xhrLogin.setRequestHeader("Cache-Control", "no-cache");
     xhrLogin.setRequestHeader("Access-Control-Allow-Origin", "*");
@@ -201,11 +203,16 @@ class Header extends Component {
     let xhrSignup = new XMLHttpRequest();
     xhrSignup.addEventListener("readystatechange", function () {
       if (this.readyState === 4) {
+        console.log("raw resp " + this.response);
         let signupResponse = JSON.parse(this.response);
+        console.log("response " + signupResponse);
+        
+
         if (signupResponse.code === 'SGR-001'
           || signupResponse.code === 'SGR-002'
           || signupResponse.code === 'SGR-003'
-          || signupResponse.code === 'SGR-004') {
+          || signupResponse.code === 'SGR-004'
+          || signupResponse.code === 'SGR-005') {
           that.setState({ signupError: "dispBlock" });
 
           that.setState({ signUpErrCode: signupResponse.code });
@@ -219,8 +226,13 @@ class Header extends Component {
       }
     })
 
-    xhrSignup.open("POST", this.props.baseUrl + "customer/signup");
-    xhrSignup.setRequestHeader("Content-Type", "application/json");
+    let url=this.props.baseUrl + "customer/signup";
+    console.log("url " + url);
+    let datareq= JSON.stringify(dataSignup);
+    console.log("data  " + datareq);
+
+    xhrSignup.open("POST", this.props.baseUrl + "customer/signup", true);
+    xhrSignup.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
     xhrSignup.setRequestHeader("Cache-Control", "no-cache");
     xhrSignup.setRequestHeader("Access-Control-Allow-Origin", "*");
     xhrSignup.send(JSON.stringify(dataSignup));
@@ -414,7 +426,7 @@ class Header extends Component {
                   </FormControl> : ""}
 
               </FormControl><br /><br />              
-              <Button variant="contained" color="primary" onClick={this.loginClickHandler} className={classes.formControl}>LOGIN</Button>
+              <Button variant="contained" color="primary" onClick={this.loginHandler} className={classes.formControl}>LOGIN</Button>
             </TabContainer>}
 
           {this.state.value === 1 && <TabContainer>
@@ -451,6 +463,7 @@ class Header extends Component {
                   </FormControl> : ""}
               </FormControl><br /><br />
 
+
               <FormControl required className={classes.formControl}>
 
                 <InputLabel htmlFor="mobile">Contact No.</InputLabel>
@@ -466,6 +479,12 @@ class Header extends Component {
                   <FormControl className={classes.formControl}>
                     <Typography variant="subtitle1" color="error" className={this.state.signupError} align="left">{this.state.signUpErrorMsg}</Typography>
                   </FormControl> : ""}
+
+                  {this.state.signUpErrCode === "SGR-005" ?
+                  <FormControl className={classes.formControl}>
+                    <Typography variant="subtitle1" color="error" className={this.state.signupError} align="left">{this.state.signUpErrorMsg}</Typography>
+                  </FormControl> : ""}
+
               </FormControl>
               <br /><br /><br /><br />
               <Button variant="contained" color="primary" onClick={this.signUpClickHandler} className={classes.formControl}> SIGNUP </Button>
