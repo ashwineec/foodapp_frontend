@@ -1,4 +1,3 @@
-
 import React, { Component } from "react";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
@@ -26,7 +25,7 @@ import CloseIcon from '@material-ui/icons/Close';
 const AdapterLink = React.forwardRef((props, ref) => <Link innerRef={ref} {...props} />)
 let access_token=sessionStorage.getItem('access-token');
 
-const baseURL = "http://localhost:8080/api/api/";
+const baseURL = "http://localhost:8080/api/";
 const styles = theme => ({
   root: {
     flexGrow: 1
@@ -61,41 +60,30 @@ class Details extends Component {
     let that = this;    
     sessionStorage.setItem("selRestaurant",this.props.match.params.id);
     xhrAddresses.addEventListener("readystatechange", function () {  
-        if (this.readyState === 4) {         
-          console.log(xhrAddresses,"xhrAddresses=====>")                             
-          let responseData= JSON.parse(xhrAddresses.response); 
-             newState.restaurantData  = responseData.restaurants[0]
-            //  console.log(newState.restaurantData,"newState.restaurantData")
-            let {categories} = newState.restaurantData;
+        if (this.readyState === 4) {                                      
+              newState.restaurantData = JSON.parse(xhrAddresses.response); 
+           
+           
+            let { categories } = newState.restaurantData;
             let {address} = newState.restaurantData;
-            console.log(categories)
-            newState.categoriesList=categories.split(',')
+            newState.categoriesList=categories;
             newState.address=address;
-            // for(let i =0 ; i < categories.length ; i++){
-            //   console.log(i)
-            // var categories = categories.map(function(e){return e.toString()});
-              newState.categories= categories.join().split(',')
-            // }
-            // newState.categories = categories.join()
-  //   categories.map(function(cat){
-  //   newState.categories.push(cat+" ")
-  // })
-  console.log(newState)
+    categories.map(function(cat){
+    newState.categories.push(cat.category_name+" ")
+  })
             that.setState(newState)
             
+              
         }
     })
-    // http://localhost:8080/api/swagger-ui.html#!/restaurant-controller/getRestaurantByIdUsingGET
-    // /api/restaurant/{restaurantId}
-    let id = "1dd86f90-a296-11e8-9a3a-720006ceb890"
-    xhrAddresses.open("GET", baseURL +"restaurant/"+id+"/");
-    // xhrAddresses.setRequestHeader("Authorization", "Bearer " + access_token); //sessionStorage.getItem('access-token')
-    xhrAddresses.setRequestHeader("Content-Type", "text/plain");
+  
+    xhrAddresses.open("GET", baseURL + "restaurant/"+this.props.match.params.id+"/");
+    //let id = "1dd86f90-a296-11e8-9a3a-720006ceb890"
+    //xhrAddresses.open("GET", baseURL + "restaurant/"+id);
+    xhrAddresses.setRequestHeader("Authorization", "Bearer " + access_token); //sessionStorage.getItem('access-token')
+    xhrAddresses.setRequestHeader("Content-Type", "application/json");
     xhrAddresses.setRequestHeader("Cache-Control", "no-cache");
     xhrAddresses.setRequestHeader("Access-Control-Allow-Origin", "*");  
-    xhrAddresses.setRequestHeader("Access-Control-Allow-Methods", "*");  
-
-    // 
     xhrAddresses.send(data);
    
     
@@ -208,7 +196,7 @@ class Details extends Component {
           </div>
           <div className='info-container'>
               <div className='res-name'>
-                <h3>{this.state.restaurantData.restaurant_name}</h3>
+                <h2>{this.state.restaurantData.restaurant_name}</h2>
               </div>
               <div className='address-container'>
                 <p>{this.state.address.locality}</p>

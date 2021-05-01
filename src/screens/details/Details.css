@@ -42,10 +42,10 @@
     margin-top: -25px;
     font-weight: 600; 
 }
-.avg-rating-price{
+/* .avg-rating-price{
     margin-top: -17px;
     padding: 10px;
-}
+} */
 .resrating{
     position: relative;
     
@@ -55,9 +55,9 @@
     padding-left:5px;
     padding-top: 2px;
 }
-.avg-prices{
+/* .avg-prices{
     padding-left:200px; 
-}
+} */
 .avg-rating-price{
     display:flex;
     flex-direction: row;
